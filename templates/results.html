@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Results for "{{ query }}"</h1>
+        <a href="/">Back to search</a>
+
+        {% for book in results %}
+            <div class="book-card">
+                <h2>{{ book.title }}</h2>
+                <p><strong>Author:</strong> {{ book.author }}</p>
+                <p><strong>Rating:</strong> {{ book.rating }}</p>
+                <p><strong>Relevance Score:</strong> {{ book.score }}</p>
+                <p>{{ book.description }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

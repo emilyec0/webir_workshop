@@ -1,0 +1,49 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f1;
+    color: #263b2a;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    max-width: 900px;
+    margin: 80px auto;
+    text-align: center;
+}
+
+h1 {
+    color: #3f6f4e;
+}
+
+input {
+    width: 70%;
+    padding: 14px;
+    border: 1px solid #b7c8b0;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    padding: 14px 24px;
+    border: none;
+    border-radius: 8px;
+    background-color: #6f8f72;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #58745a;
+}
+
+.book-card {
+    background: white;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
