@@ -5,19 +5,91 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Results for "{{ query }}"</h1>
-        <a href="/">Back to search</a>
+    <header class="top-bar">
+        <a class="brand" href="/">BookFinder</a>
 
-        {% for book in results %}
-            <div class="book-card">
-                <h2>{{ book.title }}</h2>
-                <p><strong>Author:</strong> {{ book.author }}</p>
-                <p><strong>Rating:</strong> {{ book.rating }}</p>
-                <p><strong>Relevance Score:</strong> {{ book.score }}</p>
-                <p>{{ book.description }}</p>
+        <form class="top-search-form" action="/search" method="get">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search books">
+            <button type="submit">Search</button>
+        </form>
+
+        <nav class="nav-links">
+        </nav>
+    </header>
+
+    <main class="results-layout">
+        <aside class="filter-sidebar">
+            <div class="filter-title">Filters</div>
+
+            <section class="filter-box">
+                <h2>Sort By</h2>
+                <a class="filter-option {% if sort_by == 'relevance' %}active{% endif %}"
+                   href="/search?q={{ query|urlencode }}&sort=relevance&genre={{ genre|urlencode }}">
+                    Relevance
+                </a>
+                <a class="filter-option {% if sort_by == 'rating' %}active{% endif %}"
+                   href="/search?q={{ query|urlencode }}&sort=rating&genre={{ genre|urlencode }}">
+                    Highest Rating
+                </a>
+                <a class="filter-option {% if sort_by == 'title' %}active{% endif %}"
+                   href="/search?q={{ query|urlencode }}&sort=title&genre={{ genre|urlencode }}">
+                    Title A-Z
+                </a>
+                <a class="filter-option {% if sort_by == 'author' %}active{% endif %}"
+                   href="/search?q={{ query|urlencode }}&sort=author&genre={{ genre|urlencode }}">
+                    Author A-Z
+                </a>
+            </section>
+
+            <section class="filter-box">
+                <h2>Genre</h2>
+                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}">All Genres</a>
+                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=fantasy">Fantasy</a>
+                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=romance">Romance</a>
+                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=young adult">Young Adult</a>
+                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=mystery">Mystery</a>
+                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=science fiction">Sci-Fi</a>
+            </section>
+        </aside>
+
+        <section class="results-main">
+            <div class="results-heading">
+                <div>
+                    <p class="eyebrow">Book Results</p>
+                    <h1>Results for "{{ query }}"</h1>
+                </div>
+                <span class="result-count">{{ results|length }}</span>
             </div>
-        {% endfor %}
-    </div>
+
+            <div class="vertical-results">
+                {% for book in results %}
+                    <article class="wide-book-card">
+                        {% if book.image %}
+                            <img class="book-cover" src="{{ book.image }}" alt="Cover of {{ book.title }}">
+                        {% else %}
+                            <div class="book-cover placeholder-cover">No Cover</div>
+                        {% endif %}
+
+                        <div class="book-info">
+                            <div class="genre-pill">{{ book.genre }}</div>
+                            <h2>{{ book.title }}</h2>
+                            <p class="book-author">{{ book.author }}</p>
+                            <p class="book-description">{{ book.description }}</p>
+
+                            <div class="book-actions">
+                                <span class="score-pill">Rating: {{ book.rating }}</span>
+                                <span class="score-pill">Relevance: {{ book.score }}</span>
+                            </div>
+                        </div>
+                    </article>
+                {% else %}
+                    <article class="empty-state">
+                        <h2>No books found.</h2>
+                        <p>Try a broader search term or remove a filter.</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
 </body>
 </html>

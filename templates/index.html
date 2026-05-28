@@ -5,14 +5,47 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Book Recommendation Search Engine</h1>
-        <p>Search for books by title, author, genre, or mood.</p>
+    <header class="top-bar">
+        <a class="brand" href="/">BookFinder</a>
+        <nav class="nav-links">
+        </nav>
+    </header>
 
-        <form action="/search" method="get">
-            <input type="text" name="q" placeholder="Try: dark fantasy, romance, books like Harry Potter">
-            <button type="submit">Search</button>
-        </form>
-    </div>
+    <main class="page-shell">
+        <section class="hero-card">
+            <p class="eyebrow">Book Search Engine</p>
+            <h1>Find your next favourite book.</h1>
+            <p class="hero-text">
+                Search by title, author, genre, mood, or describe the kind of story you want.
+            </p>
+
+            <form class="search-form" action="/search" method="get">
+                <input
+                    type="text"
+                    name="q"
+                    placeholder="Try: fantasy rebellion, enemies to lovers, books like The Hunger Games"
+                >
+                <button type="submit">Search</button>
+            </form>
+        </section>
+
+        <section class="filter-panel">
+            <div class="filter-header">
+                <h2>Refine by tags</h2>
+                <a href="/" class="reset-link">Reset filters</a>
+            </div>
+
+            <div class="tag-grid">
+                <a class="filter-tag" href="/search?q=fantasy">Fantasy</a>
+                <a class="filter-tag" href="/search?q=romance">Romance</a>
+                <a class="filter-tag" href="/search?q=dystopian">Dystopian</a>
+                <a class="filter-tag" href="/search?q=dark academia">Dark Academia</a>
+                <a class="filter-tag" href="/search?q=found family">Found Family</a>
+                <a class="filter-tag" href="/search?q=slow burn">Slow Burn</a>
+                <a class="filter-tag" href="/search?q=magic school">Magic School</a>
+                <a class="filter-tag" href="/search?q=political intrigue">Political Intrigue</a>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
