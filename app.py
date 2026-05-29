@@ -1,5 +1,7 @@
+import os
+
 from flask import Flask, render_template, request
-from search_engine import search_books
+from search_engine import search_books, start_search_warmup
 
 app = Flask(__name__)
 
@@ -27,4 +29,9 @@ def search():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug = True
+
+    if not debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        start_search_warmup()
+
+    app.run(debug=debug, use_reloader=False)
