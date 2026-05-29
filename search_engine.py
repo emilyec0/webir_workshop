@@ -193,15 +193,19 @@ def _ensure_dataset_loaded() -> None:
             else ("genre" if "genre" in data_frame.columns else "categories")
         )
         _IMAGE_COL = (
-            "image_url"
-            if "image_url" in data_frame.columns
+            "cover_image_uri"
+            if "cover_image_uri" in data_frame.columns
             else (
-                "thumbnail"
-                if "thumbnail" in data_frame.columns
+                "image_url"
+                if "image_url" in data_frame.columns
                 else (
-                    "cover_image"
-                    if "cover_image" in data_frame.columns
-                    else ("book_image" if "book_image" in data_frame.columns else None)
+                    "thumbnail"
+                    if "thumbnail" in data_frame.columns
+                    else (
+                        "cover_image"
+                        if "cover_image" in data_frame.columns
+                        else ("book_image" if "book_image" in data_frame.columns else None)
+                    )
                 )
             )
         )
