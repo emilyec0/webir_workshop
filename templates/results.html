@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Search Results</title>
+    <title>PageTurner — Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <header class="top-bar">
-        <a class="brand" href="/">BookFinder</a>
+        <a class="brand" href="/">PageTurner</a>
 
         <form class="top-search-form" action="/search" method="get">
             <input type="text" name="q" value="{{ query }}" placeholder="Search books">
@@ -55,7 +58,7 @@
         <section class="results-main">
             <div class="results-heading">
                 <div>
-                    <p class="eyebrow">Book Results</p>
+                    <p class="eyebrow">Search results</p>
                     <h1>Results for "{{ query }}"</h1>
                 </div>
                 <span class="result-count">{{ results|length }}</span>
