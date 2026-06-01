@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 import threading
 import re
+import ast
 from typing import Optional
 import hashlib
 import json
@@ -807,9 +808,85 @@ def _review_sentiment_for_indices(indices: np.ndarray) -> np.ndarray:
     return _REVIEW_SENTIMENT_SCORES[np.asarray(indices, dtype=np.int64)]
 
 
+def _field_match_strength(
+    query_norm: str,
+    query_tokens: set[str],
+    field_norm: str,
+) -> float:
+    if not query_norm or not field_norm:
+        return 0.0
+
+    if query_norm == field_norm:
+        return 1.0
+
+    if query_norm in field_norm or field_norm in query_norm:
+        return 0.92 if len(query_tokens) <= 3 else 0.86
+
+    if not query_tokens:
+        return 0.0
+
+    field_tokens = set(_QUERY_TOKEN_RE.findall(field_norm))
+    if not field_tokens:
+        return 0.0
+
+    overlap = len(query_tokens & field_tokens)
+    if overlap == 0:
+        return 0.0
+
+    query_coverage = overlap / float(len(query_tokens))
+    field_coverage = overlap / float(len(field_tokens))
+    return min(0.8, 0.52 * query_coverage + 0.28 * field_coverage + 0.12)
+
+
+def _field_boost_for_indices(
+    query: str,
+    indices: np.ndarray,
+    normalized_ref: Optional[str],
+) -> np.ndarray:
+    if len(indices) == 0:
+        return np.array([], dtype=np.float32)
+
+    query_norm = _normalize_text(query)
+    query_tokens = {
+        token
+        for token in _QUERY_TOKEN_RE.findall(query_norm)
+        if len(token) > 2 and token not in _SEARCH_STOPWORDS
+    }
+
+    ref_norm = normalized_ref or ""
+    ref_tokens = {
+        token
+        for token in _QUERY_TOKEN_RE.findall(ref_norm)
+        if len(token) > 2 and token not in _SEARCH_STOPWORDS
+    }
+
+    boosts = np.zeros(len(indices), dtype=np.float32)
+
+    for position, index in enumerate(np.asarray(indices, dtype=np.int64)):
+        title_norm, author_norm = _normalized_title_and_author(int(index))
+
+        title_score = max(
+            _field_match_strength(query_norm, query_tokens, title_norm),
+            _field_match_strength(ref_norm, ref_tokens, title_norm),
+        )
+        author_score = max(
+            _field_match_strength(query_norm, query_tokens, author_norm),
+            _field_match_strength(ref_norm, ref_tokens, author_norm),
+        )
+
+        if len(query_tokens) <= 3:
+            author_score *= 1.08
+
+        boosts[position] = max(title_score, author_score)
+
+    return boosts
+
+
 def _blend_relevance_with_reviews(
     base_scores: np.ndarray,
     indices: np.ndarray,
+    query: str = "",
+    normalized_ref: Optional[str] = None,
 ) -> np.ndarray:
 
     if len(indices) == 0:
@@ -817,8 +894,9 @@ def _blend_relevance_with_reviews(
 
     review_scores = _review_boost_for_indices(indices)
     sentiment_scores = _review_sentiment_for_indices(indices)
+    field_boosts = _field_boost_for_indices(query, indices, normalized_ref)
 
-    if review_scores.size == 0 and sentiment_scores.size == 0:
+    if review_scores.size == 0 and sentiment_scores.size == 0 and field_boosts.size == 0:
         return np.asarray(base_scores, dtype=np.float32)
 
     base_scores = np.asarray(base_scores, dtype=np.float32)
@@ -841,7 +919,7 @@ def _blend_relevance_with_reviews(
 
     sentiment_norm = (np.clip(sentiment_scores, -1.0, 1.0) + 1.0) / 2.0
 
-    return 0.76 * base_norm + 0.16 * review_norm + 0.08 * sentiment_norm
+    return 0.58 * base_norm + 0.14 * review_norm + 0.08 * sentiment_norm + 0.20 * field_boosts
 
 
 def _initialize_search_assets() -> None:
@@ -972,6 +1050,44 @@ def _rating_to_float(value):
         return 0.0
 
 
+def _parse_genre_tags(value) -> list[str]:
+    if value is None:
+        return []
+
+    text = str(value).strip()
+    if not text:
+        return []
+
+    parsed = None
+    if text.startswith("[") and text.endswith("]"):
+        try:
+            parsed = ast.literal_eval(text)
+        except Exception:
+            parsed = None
+
+    if isinstance(parsed, (list, tuple)):
+        tags = [str(item).strip().strip("'\"") for item in parsed]
+    else:
+        tags = [
+            part.strip().strip("'\"")
+            for part in re.split(r"[,\|/]+", text)
+        ]
+
+    cleaned = []
+    seen = set()
+    for tag in tags:
+        if not tag:
+            continue
+        normalized_tag = re.sub(r"\s+", " ", tag).strip()
+        lower_tag = normalized_tag.lower()
+        if lower_tag in seen:
+            continue
+        seen.add(lower_tag)
+        cleaned.append(normalized_tag)
+
+    return cleaned
+
+
 def _normalized_title_and_author(index: int) -> tuple[str, str]:
     title = _TITLE_NORMALIZED[index]
     if title is None:
@@ -1098,7 +1214,12 @@ def _rank_lexical_results(
         [candidate_scores[index] for index in ranked_indices],
         dtype=np.float32,
     )
-    ranked_review_scores = _blend_relevance_with_reviews(ranked_base_scores, np.asarray(ranked_indices, dtype=np.int32))
+    ranked_review_scores = _blend_relevance_with_reviews(
+        ranked_base_scores,
+        np.asarray(ranked_indices, dtype=np.int32),
+        query=query,
+        normalized_ref=normalized_ref,
+    )
 
     results = []
     for position, index in enumerate(ranked_indices):
@@ -1111,11 +1232,13 @@ def _rank_lexical_results(
             continue
 
         genre_text = _GENRE_VALUES[index]
+        genre_tags = _parse_genre_tags(genre_text)
         results.append({
             "title": _TITLE_VALUES[index] or "Unknown Title",
             "author": _AUTHOR_VALUES[index] or "Unknown Author",
             "rating": _RATING_VALUES[index],
-            "genre": genre_text if genre_text else "Unlisted genre",
+            "genre": genre_tags[0] if genre_tags else (genre_text if genre_text else "Unlisted genre"),
+            "tags": genre_tags,
             "description": _DETAILS_VALUES[index] or "No description available.",
             "image": _IMAGE_VALUES[index],
             "score": round(float(ranked_review_scores[position]), 3),
@@ -1187,18 +1310,25 @@ def _rank_direct_lexical_results(
 
     base_scores = np.asarray([score for score, _ in candidate_scores], dtype=np.float32)
     indices = np.asarray([index for _, index in candidate_scores], dtype=np.int32)
-    blended_scores = _blend_relevance_with_reviews(base_scores, indices)
+    blended_scores = _blend_relevance_with_reviews(
+        base_scores,
+        indices,
+        query=query,
+        normalized_ref=normalized_ref,
+    )
     candidate_scores = list(zip(blended_scores.tolist(), indices.tolist()))
     candidate_scores.sort(key=lambda item: item[0], reverse=True)
 
     results = []
     for score, index in candidate_scores[:max_candidates]:
         genre_text = _GENRE_VALUES[index]
+        genre_tags = _parse_genre_tags(genre_text)
         results.append({
             "title": _TITLE_VALUES[index] or "Unknown Title",
             "author": _AUTHOR_VALUES[index] or "Unknown Author",
             "rating": _RATING_VALUES[index],
-            "genre": genre_text if genre_text else "Unlisted genre",
+            "genre": genre_tags[0] if genre_tags else (genre_text if genre_text else "Unlisted genre"),
+            "tags": genre_tags,
             "description": _DETAILS_VALUES[index] or "No description available.",
             "image": _IMAGE_VALUES[index],
             "score": round(score, 3),
@@ -1348,7 +1478,12 @@ def search_books(query, top_n=10, sort_by="relevance", genre_filter=""):
                 [float(scores[selected_positions[int(index)]]) for index in selected_indices],
                 dtype=np.float32,
             )
-        blended_scores = _blend_relevance_with_reviews(base_scores, selected_indices)
+        blended_scores = _blend_relevance_with_reviews(
+            base_scores,
+            selected_indices,
+            query=query,
+            normalized_ref=normalized_ref,
+        )
     else:
         blended_scores = np.asarray([], dtype=np.float32)
 
@@ -1356,13 +1491,15 @@ def search_books(query, top_n=10, sort_by="relevance", genre_filter=""):
 
     for position, i in enumerate(selected_indices):
         genre_text = _GENRE_VALUES[i]
+        genre_tags = _parse_genre_tags(genre_text)
         score_value = float(blended_scores[position]) if len(blended_scores) > position else 0.0
 
         results.append({
             "title": _TITLE_VALUES[i] or "Unknown Title",
             "author": _AUTHOR_VALUES[i] or "Unknown Author",
             "rating": _RATING_VALUES[i],
-            "genre": genre_text if genre_text else "Unlisted genre",
+            "genre": genre_tags[0] if genre_tags else (genre_text if genre_text else "Unlisted genre"),
+            "tags": genre_tags,
             "description": _DETAILS_VALUES[i] or "No description available.",
             "image": _IMAGE_VALUES[i],
             "score": round(score_value, 3)

@@ -74,7 +74,15 @@
                         {% endif %}
 
                         <div class="book-info">
-                            <div class="genre-pill">{{ book.genre }}</div>
+                            <div class="book-tags">
+                                {% if book.tags %}
+                                    {% for tag in book.tags %}
+                                        <span class="book-tag">{{ tag }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="book-tag">{{ book.genre }}</span>
+                                {% endif %}
+                            </div>
                             <h2>{{ book.title }}</h2>
                             <p class="book-author">{{ book.author }}</p>
                             <p class="book-description">{{ book.description }}</p>
