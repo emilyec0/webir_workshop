@@ -3,30 +3,48 @@
 }
 
 :root {
-    --bg: #fbf8f2;
-    --surface: rgba(249, 240, 225, 0.86);
-    --surface-strong: #f4e7d2;
-    --surface-soft: #ead8bc;
-    --plum: #5b4d7d;
-    --plum-deep: #43385f;
-    --lavender: #b197d0;
-    --cream: #f2e1c3;
-    --sand: #dcc6a5;
+    --bg: #f7f0e4;
+    --surface: rgba(255, 249, 240, 0.92);
+    --surface-strong: #f3e5cd;
+    --surface-soft: #e6d1b0;
+    --plum: #594a76;
+    --plum-deep: #3f3455;
+    --lavender: #b49dcc;
+    --cream: #f5e7cc;
+    --sand: #ddc39b;
     --text: #2a2333;
-    --muted: #68597e;
-    --border: #dbc8ab;
-    --shadow: 0 22px 50px rgba(81, 71, 101, 0.14);
+    --muted: #6b5b79;
+    --border: #d8c5a2;
+    --shadow: 0 20px 44px rgba(81, 71, 101, 0.12);
 }
 
 body {
     margin: 0;
     color: var(--text);
     background:
-        radial-gradient(circle at 16% 18%, rgba(177, 151, 208, 0.34), transparent 16%),
-        radial-gradient(circle at 82% 12%, rgba(242, 225, 195, 0.98), transparent 15%),
-        radial-gradient(circle at 72% 74%, rgba(91, 77, 125, 0.12), transparent 22%),
-        linear-gradient(180deg, #fbf4e8 0%, #f5eedf 100%);
+        radial-gradient(circle at 16% 18%, rgba(180, 157, 204, 0.28), transparent 16%),
+        radial-gradient(circle at 82% 12%, rgba(245, 231, 204, 0.98), transparent 15%),
+        radial-gradient(circle at 72% 74%, rgba(89, 74, 118, 0.1), transparent 22%),
+        linear-gradient(180deg, #fbf5ea 0%, #f4ead7 100%);
     font-family: "Inter", sans-serif;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)),
+        repeating-linear-gradient(
+            90deg,
+            rgba(123, 101, 150, 0.03) 0,
+            rgba(123, 101, 150, 0.03) 1px,
+            transparent 1px,
+            transparent 42px
+        );
+    opacity: 0.35;
 }
 
 a {
@@ -48,9 +66,9 @@ button,
 
 .eyebrow {
     margin: 0 0 14px;
-    color: var(--plum);
+    color: #7a5d31;
     text-transform: uppercase;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.22em;
     font-size: 12px;
     font-weight: 800;
 }
@@ -63,7 +81,7 @@ button,
 .empty-state {
     background: var(--surface);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(217, 203, 234, 0.95);
+    border: 1px solid rgba(216, 197, 162, 0.95);
     box-shadow: var(--shadow);
 }
 
@@ -95,9 +113,10 @@ button,
     gap: 14px;
     text-decoration: none;
     min-width: fit-content;
-    color: var(--text);
-    font-size: 22px;
-    font-weight: 800;
+    color: var(--plum-deep);
+    font-family: "Cormorant Garamond", serif;
+    font-size: 30px;
+    font-weight: 700;
     letter-spacing: -0.03em;
 }
 
@@ -118,19 +137,22 @@ button,
     overflow: hidden;
     border-radius: 34px;
     padding: clamp(34px, 6vw, 72px);
+    background:
+        radial-gradient(circle at top right, rgba(245, 231, 204, 0.9), transparent 24%),
+        linear-gradient(135deg, rgba(255, 250, 242, 0.96), rgba(248, 239, 224, 0.96));
 }
 
 .hero-card::after {
     content: "";
     position: absolute;
-    right: -78px;
-    bottom: -92px;
-    width: 280px;
-    height: 280px;
+    right: -82px;
+    bottom: -96px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
     background:
-        radial-gradient(circle at 38% 48%, var(--lavender) 0 35%, transparent 36%),
-        radial-gradient(circle at 63% 50%, var(--cream) 0 33%, transparent 34%),
+        radial-gradient(circle at 38% 48%, var(--lavender) 0 34%, transparent 35%),
+        radial-gradient(circle at 63% 50%, var(--cream) 0 32%, transparent 33%),
         var(--plum);
     opacity: 0.95;
 }
@@ -153,7 +175,7 @@ h1 {
 .hero-text {
     max-width: 650px;
     margin: 20px 0 34px;
-    color: var(--muted);
+    color: #6a5a70;
     font-size: 18px;
     line-height: 1.7;
 }
@@ -163,9 +185,10 @@ h1 {
     display: flex;
     gap: 10px;
     padding: 10px;
-    background: rgba(250, 242, 229, 0.78);
-    border: 1px solid rgba(219, 200, 171, 0.95);
+    background: rgba(255, 248, 237, 0.92);
+    border: 1px solid rgba(216, 197, 162, 0.95);
     border-radius: 999px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
 .search-form {
@@ -183,21 +206,21 @@ input {
     outline: none;
     padding: 15px 18px;
     border-radius: 999px;
-    background: rgba(255, 250, 241, 0.92);
+    background: rgba(255, 252, 246, 0.96);
     color: var(--text);
     font: inherit;
     min-width: 0;
 }
 
 input::placeholder {
-    color: #9b8d74;
+    color: #97856e;
 }
 
 button {
     border: 0;
     border-radius: 999px;
     padding: 14px 22px;
-    background: linear-gradient(135deg, var(--plum) 0%, #6a58a0 100%);
+    background: linear-gradient(135deg, var(--plum) 0%, #73619a 100%);
     color: white;
     font-size: 14px;
     font-weight: 800;
@@ -207,7 +230,7 @@ button {
 }
 
 button:hover {
-    background: linear-gradient(135deg, var(--plum-deep) 0%, #5e4b9d 100%);
+    background: linear-gradient(135deg, var(--plum-deep) 0%, #67548f 100%);
     transform: translateY(-1px);
 }
 
@@ -215,6 +238,9 @@ button:hover {
     margin-top: 24px;
     padding: 26px;
     border-radius: 30px;
+    background:
+        radial-gradient(circle at top left, rgba(245, 231, 204, 0.75), transparent 26%),
+        rgba(255, 249, 240, 0.92);
 }
 
 .filter-header,
@@ -235,7 +261,7 @@ button:hover {
 
 .filter-header h2 {
     color: var(--plum-deep);
-    font-family: "Montserrat", sans-serif;
+    font-family: "Cormorant Garamond", serif;
     font-size: 18px;
     font-weight: 800;
 }
@@ -264,16 +290,18 @@ button:hover {
     align-items: center;
     padding: 12px 16px;
     border-radius: 999px;
-    border: 1px solid rgba(177, 151, 208, 0.4);
-    background: rgba(242, 225, 195, 0.95);
+    border: 1px solid rgba(177, 151, 208, 0.36);
+    background: linear-gradient(180deg, rgba(252, 244, 230, 0.98), rgba(236, 220, 190, 0.96));
     color: var(--plum-deep);
     text-decoration: none;
     font-size: 14px;
     font-weight: 700;
+    box-shadow: 0 8px 16px rgba(81, 71, 101, 0.06);
 }
 
 .filter-tag:hover {
-    background: rgba(242, 225, 195, 0.68);
+    background: linear-gradient(180deg, rgba(250, 240, 219, 1), rgba(228, 206, 170, 0.98));
+    transform: translateY(-1px);
 }
 
 .results-layout {
@@ -300,6 +328,8 @@ button:hover {
     padding: 18px;
     border-radius: 24px;
     margin-bottom: 18px;
+    background:
+        linear-gradient(180deg, rgba(255, 251, 245, 0.94), rgba(247, 237, 221, 0.94));
 }
 
 .filter-box h2 {
@@ -315,8 +345,8 @@ button:hover {
     margin-top: 8px;
     padding: 13px 14px;
     border-radius: 18px;
-    border: 1px solid rgba(219, 200, 171, 0.95);
-    background: rgba(249, 240, 225, 0.92);
+    border: 1px solid rgba(216, 197, 162, 0.95);
+    background: rgba(252, 247, 238, 0.92);
     color: var(--plum-deep);
     text-decoration: none;
     font-size: 14px;
@@ -325,8 +355,15 @@ button:hover {
 
 .filter-option:hover,
 .filter-option.active {
-    background: rgba(177, 151, 208, 0.18);
-    border-color: rgba(177, 151, 208, 0.42);
+    background: linear-gradient(135deg, var(--plum) 0%, #6a58a0 100%);
+    color: #fff7eb;
+    border-color: rgba(91, 77, 125, 0.9);
+    box-shadow: 0 12px 22px rgba(81, 71, 101, 0.18);
+    transform: translateY(-1px);
+}
+
+.filter-option.active {
+    position: relative;
 }
 
 .results-main {
@@ -353,7 +390,7 @@ button:hover {
     align-self: start;
     border-radius: 999px;
     padding: 10px 14px;
-    background: rgba(242, 225, 195, 0.88);
+    background: rgba(245, 231, 204, 0.92);
     color: var(--plum-deep);
     font-size: 14px;
     font-weight: 800;
@@ -375,6 +412,8 @@ button:hover {
     grid-template-columns: 128px 1fr;
     gap: 20px;
     padding: 20px;
+    background:
+        linear-gradient(135deg, rgba(255, 250, 242, 0.98), rgba(246, 237, 224, 0.96));
 }
 
 .book-cover {
@@ -383,7 +422,8 @@ button:hover {
     object-fit: cover;
     border-radius: 20px;
     background: var(--surface-soft);
-    border: 1px solid rgba(219, 200, 171, 0.9);
+    border: 1px solid rgba(216, 197, 162, 0.9);
+    box-shadow: 0 10px 18px rgba(81, 71, 101, 0.1);
 }
 
 .placeholder-cover {
@@ -400,7 +440,7 @@ button:hover {
     padding: 7px 12px;
     border-radius: 999px;
     margin-bottom: 12px;
-    background: rgba(242, 225, 195, 0.92);
+    background: rgba(245, 231, 204, 0.96);
     color: var(--plum-deep);
     font-size: 12px;
     font-weight: 800;
@@ -422,7 +462,7 @@ button:hover {
     border-radius: 999px;
     border: 1px solid rgba(177, 151, 208, 0.42);
     background:
-        linear-gradient(180deg, rgba(242, 225, 195, 0.96), rgba(227, 207, 176, 0.9));
+        linear-gradient(180deg, rgba(251, 244, 233, 0.98), rgba(231, 211, 183, 0.94));
     color: var(--plum-deep);
     font-size: 12px;
     font-weight: 800;
@@ -435,13 +475,13 @@ button:hover {
     margin: 0 0 8px;
     color: var(--plum-deep);
     font-family: "Cormorant Garamond", serif;
-    font-size: 30px;
+    font-size: 32px;
     line-height: 1;
 }
 
 .book-author {
     margin: 0 0 12px;
-    color: var(--plum);
+    color: #6f5d85;
     font-size: 15px;
     font-weight: 800;
 }
@@ -458,7 +498,7 @@ button:hover {
     gap: 10px;
     margin-top: 16px;
     padding-top: 14px;
-    border-top: 1px solid rgba(219, 200, 171, 0.9);
+    border-top: 1px solid rgba(216, 197, 162, 0.9);
 }
 
 .score-pill {
@@ -466,7 +506,7 @@ button:hover {
     align-items: center;
     padding: 8px 12px;
     border-radius: 999px;
-    background: rgba(242, 225, 195, 0.88);
+    background: rgba(245, 231, 204, 0.92);
     color: var(--plum-deep);
     font-size: 12px;
     font-weight: 800;
@@ -480,7 +520,7 @@ button:hover {
     margin: 0 0 8px;
     color: var(--plum-deep);
     font-family: "Cormorant Garamond", serif;
-    font-size: 32px;
+    font-size: 34px;
 }
 
 .empty-state p {
