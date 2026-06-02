@@ -46,12 +46,12 @@
 
             <section class="filter-box">
                 <h2>Genre</h2>
-                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}">All Genres</a>
-                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=fantasy">Fantasy</a>
-                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=romance">Romance</a>
-                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=young adult">Young Adult</a>
-                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=mystery">Mystery</a>
-                <a class="filter-option" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=science fiction">Sci-Fi</a>
+                <a class="filter-option {% if not genre %}active{% endif %}" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}">All Genres</a>
+                <a class="filter-option {% if genre == 'fantasy' %}active{% endif %}" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=fantasy">Fantasy</a>
+                <a class="filter-option {% if genre == 'romance' %}active{% endif %}" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=romance">Romance</a>
+                <a class="filter-option {% if genre == 'young adult' %}active{% endif %}" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=young adult">Young Adult</a>
+                <a class="filter-option {% if genre == 'mystery' %}active{% endif %}" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=mystery">Mystery</a>
+                <a class="filter-option {% if genre == 'science fiction' %}active{% endif %}" href="/search?q={{ query|urlencode }}&sort={{ sort_by }}&genre=science fiction">Sci-Fi</a>
             </section>
         </aside>
 
